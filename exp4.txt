@@ -1,0 +1,65 @@
+🔹 EXPERIMENT: REMOVE COMMENTS USING LEX
+✅ AIM
+
+To design and implement a LEX program to eliminate comment lines in a C program and copy the resulting program into a separate file.
+
+✅ ALGORITHM
+Start the program
+Open the input C source file
+Create and open an output file to store the comment-free code
+Read the input using LEX rules
+Identify:
+Single-line comments (// ...)
+Multi-line comments (/* ... */)
+Ignore (skip) all comment content
+Copy all non-comment text to output file
+Continue until end of file
+Close both files
+Stop
+✅ PROGRAM (LEX CODE)
+%{
+#include <stdio.h>
+
+FILE *out;
+%}
+
+%%
+"//".*                 ;   // Ignore single-line comments
+
+"/*"([^*]|\*+[^*/])*\*+"/"   ;   // Ignore multi-line comments
+
+.|\n                   { fputc(yytext[0], out); }   // Copy everything else
+%%
+
+int main() {
+    FILE *in;
+
+    in = fopen("input.c", "r");
+    if (!in) {
+        printf("Error opening input file\n");
+        return 1;
+    }
+
+    out = fopen("output.c", "w");
+    if (!out) {
+        printf("Error opening output file\n");
+        return 1;
+    }
+
+    yyin = in;
+    yylex();
+
+    fclose(in);
+    fclose(out);
+
+    printf("Comments removed successfully. Check output.c\n");
+    return 0;
+}
+
+int yywrap() {
+    return 1;
+}
+✅ HOW TO EXECUTE
+lex program.l
+gcc lex.yy.c -o output
+./output

@@ -1,0 +1,50 @@
+🔹 EXPERIMENT: LEX PROGRAM FOR ARITHMETIC EXPRESSION
+✅ AIM
+
+To write a LEX program to recognize a valid arithmetic expression where identifiers are integers only and operators are + and *, and to count and display the number of identifiers and operators separately.
+
+✅ ALGORITHM
+Start
+Read the arithmetic expression from the user
+Initialize counters:
+id_count = 0 (for integers)
+op_count = 0 (for operators)
+Scan the input expression character by character
+If a sequence of digits is found → count as an identifier
+If + or * is found → count as operator
+Ignore spaces and newline characters
+Continue until end of input
+Print the count of identifiers and operators
+Stop
+✅ PROGRAM (LEX CODE)
+%{
+#include <stdio.h>
+int id_count = 0;
+int op_count = 0;
+%}
+
+%%
+[0-9]+      { id_count++; printf("Identifier (Integer): %s\n", yytext); }
+[+]         { op_count++; printf("Operator: %s\n", yytext); }
+[*]         { op_count++; printf("Operator: %s\n", yytext); }
+[ \t\n]     ;   // Ignore whitespace
+.           { printf("Invalid Character: %s\n", yytext); }
+%%
+
+int main() {
+    printf("Enter an arithmetic expression:\n");
+    yylex();
+
+    printf("\nTotal Identifiers (Integers): %d\n", id_count);
+    printf("Total Operators (+, *): %d\n", op_count);
+
+    return 0;
+}
+
+int yywrap() {
+    return 1;
+}
+✅ HOW TO EXECUTE (VERY IMPORTANT FOR LAB/VIVA)
+lex program.l
+gcc lex.yy.c -o output
+./output

@@ -1,0 +1,62 @@
+🔹 EXPERIMENT: YACC PROGRAM FOR aⁿbⁿ
+✅ AIM
+
+To write a YACC program to recognize all strings of the form aⁿbⁿ, where the string starts with n number of 'a' characters followed by n number of 'b' characters.
+
+✅ ALGORITHM
+Start the program
+Read the input string from the user
+Initialize the YACC parser
+Define grammar rules such that:
+Equal number of a and b are present
+All a’s appear before b’s
+Use recursive rule:
+Match one a with one b
+If parsing completes successfully → valid string
+Otherwise → invalid string
+Display result
+Stop
+✅ PROGRAM
+🔸 LEX FILE (lex.l)
+%{
+#include "y.tab.h"
+%}
+
+%%
+a       { return 'a'; }
+b       { return 'b'; }
+\n      { return 0; }
+.       { return yytext[0]; }
+%%
+🔸 YACC FILE (yacc.y)
+%{
+#include <stdio.h>
+#include <stdlib.h>
+
+void yyerror(const char *s);
+int yylex();
+%}
+
+%%
+S : 'a' S 'b'
+  | 'a' 'b'
+  ;
+%%
+
+int main() {
+    printf("Enter a string (only a's followed by b's):\n");
+    if (yyparse() == 0)
+        printf("Valid String\n");
+    else
+        printf("Invalid String\n");
+    return 0;
+}
+
+void yyerror(const char *s) {
+    printf("Invalid String\n");
+}
+✅ HOW TO EXECUTE
+lex lex.l
+yacc -d yacc.y
+gcc lex.yy.c y.tab.c -o output
+./output

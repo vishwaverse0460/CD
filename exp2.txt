@@ -1,0 +1,115 @@
+✅ AIM
+
+To develop a C program that analyses a given C code snippet and recognizes different tokens, including keywords, identifiers, operators, delimiters, and special symbols.
+
+✅ ALGORITHM
+Start
+Take a C code snippet as input from the user
+Initialize arrays for:
+Keywords
+Operators
+Special symbols (delimiters)
+Read the input line
+Break the input into tokens using delimiters like space, newline, tab
+For each token:
+Check if it matches any keyword
+Else check if it is an operator
+Else check if it is a special symbol
+Else check if it is a valid identifier
+Print the type of each token
+Stop
+✅ PROGRAM
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+int isKeyword(char *str) {
+    char keywords[][10] = {
+        "int", "float", "char", "double", "if", "else",
+        "while", "for", "return", "void", "break", "continue"
+    };
+    int i;
+    for (i = 0; i < 12; i++) {
+        if (strcmp(str, keywords[i]) == 0)
+            return 1;
+    }
+    return 0;
+}
+
+int isOperator(char *str) {
+    char operators[][3] = {
+        "+", "-", "*", "/", "%", "=", "==", ">", "<", ">=", "<=", "!="
+    };
+    int i;
+    for (i = 0; i < 12; i++) {
+        if (strcmp(str, operators[i]) == 0)
+            return 1;
+    }
+    return 0;
+}
+
+int isSpecialSymbol(char ch) {
+    char symbols[] = {'{','}','(',')','[',']',';',','};
+    int i;
+    for (i = 0; i < 8; i++) {
+        if (ch == symbols[i])
+            return 1;
+    }
+    return 0;
+}
+
+int isIdentifier(char *str) {
+    if (!isalpha(str[0]) && str[0] != '_')
+        return 0;
+
+    for (int i = 1; str[i] != '\0'; i++) {
+        if (!isalnum(str[i]) && str[i] != '_')
+            return 0;
+    }
+    return 1;
+}
+
+int main() {
+    char input[200], token[50];
+    int i = 0, j = 0;
+
+    printf("Enter C code snippet:\n");
+    fgets(input, sizeof(input), stdin);
+
+    printf("\nToken Analysis:\n");
+
+    while (input[i] != '\0') {
+
+        // Skip spaces
+        if (isspace(input[i])) {
+            i++;
+            continue;
+        }
+
+        // Handle special symbols
+        if (isSpecialSymbol(input[i])) {
+            printf("%c : Special Symbol\n", input[i]);
+            i++;
+            continue;
+        }
+
+        // Extract token
+        j = 0;
+        while (!isspace(input[i]) && !isSpecialSymbol(input[i]) && input[i] != '\0') {
+            token[j++] = input[i++];
+        }
+        token[j] = '\0';
+
+        // Classification
+        if (isKeyword(token))
+            printf("%s : Keyword\n", token);
+        else if (isOperator(token))
+            printf("%s : Operator\n", token);
+        else if (isIdentifier(token))
+            printf("%s : Identifier\n", token);
+        else
+            printf("%s : Unknown\n", token);
+    }
+
+    return 0;
+}

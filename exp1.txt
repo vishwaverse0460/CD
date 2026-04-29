@@ -1,0 +1,255 @@
+EXPERIMENT: BASIC STRING OPERATIONS IN C
+✅ 1. Find length of string (without strlen())
+AIM
+
+To write a C program to find the length of a string without using built-in functions.
+
+ALGORITHM
+Start
+Declare a string and an integer variable count = 0
+Read the string from user
+Traverse the string until '\0'
+Increment count for each character
+Print the length
+Stop
+PROGRAM
+#include <stdio.h>
+
+int main() {
+    char str[100];
+    int count = 0, i = 0;
+
+    printf("Enter a string: ");
+    scanf("%s", str);
+
+    while (str[i] != '\0') {
+        count++;
+        i++;
+    }
+
+    printf("Length of string = %d", count);
+    return 0;
+}
+✅ 2. Copy string (without strcpy())
+AIM
+
+To write a C program to copy one string to another without using built-in functions.
+
+ALGORITHM
+Start
+Declare two strings
+Read source string
+Traverse source string
+Copy each character to destination
+Add '\0' at end
+Print copied string
+Stop
+PROGRAM
+#include <stdio.h>
+
+int main() {
+    char str1[100], str2[100];
+    int i = 0;
+
+    printf("Enter a string: ");
+    scanf("%s", str1);
+
+    while (str1[i] != '\0') {
+        str2[i] = str1[i];
+        i++;
+    }
+    str2[i] = '\0';
+
+    printf("Copied string: %s", str2);
+    return 0;
+}
+✅ 3. Reverse a string
+AIM
+
+To write a C program to reverse a string without using built-in functions.
+
+ALGORITHM
+Start
+Read string
+Find length manually
+Swap characters from start and end
+Continue until middle
+Print reversed string
+Stop
+PROGRAM
+#include <stdio.h>
+
+int main() {
+    char str[100];
+    int i = 0, len = 0;
+    char temp;
+
+    printf("Enter a string: ");
+    scanf("%s", str);
+
+    while (str[len] != '\0')
+        len++;
+
+    for (i = 0; i < len / 2; i++) {
+        temp = str[i];
+        str[i] = str[len - i - 1];
+        str[len - i - 1] = temp;
+    }
+
+    printf("Reversed string: %s", str);
+    return 0;
+}
+✅ 4. Count vowels and consonants
+AIM
+
+To write a C program to count vowels and consonants in a string.
+
+ALGORITHM
+Start
+Read string
+Initialize vowels = 0, consonants = 0
+Traverse string
+Check if character is vowel
+Else if alphabet → consonant
+Print counts
+Stop
+PROGRAM
+#include <stdio.h>
+
+int main() {
+    char str[100];
+    int i = 0, vowels = 0, consonants = 0;
+
+    printf("Enter a string: ");
+    scanf("%s", str);
+
+    while (str[i] != '\0') {
+        char ch = str[i];
+
+        if (ch=='a'||ch=='e'||ch=='i'||ch=='o'||ch=='u'||
+            ch=='A'||ch=='E'||ch=='I'||ch=='O'||ch=='U') {
+            vowels++;
+        }
+        else if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
+            consonants++;
+        }
+
+        i++;
+    }
+
+    printf("Vowels = %d\nConsonants = %d", vowels, consonants);
+    return 0;
+}
+✅ 5. Frequency of each character
+AIM
+
+To write a C program to find frequency of each character in a string.
+
+ALGORITHM
+Start
+Read string
+Initialize frequency array (size 256) to 0
+Traverse string
+Increment count of each character
+Print characters with frequency > 0
+Stop
+PROGRAM
+#include <stdio.h>
+
+int main() {
+    char str[100];
+    int freq[256] = {0}, i = 0;
+
+    printf("Enter a string: ");
+    scanf("%s", str);
+
+    while (str[i] != '\0') {
+        freq[str[i]]++;
+        i++;
+    }
+
+    for (i = 0; i < 256; i++) {
+        if (freq[i] != 0) {
+            printf("%c = %d\n", i, freq[i]);
+        }
+    }
+
+    return 0;
+}
+✅ 6. Remove spaces from string
+AIM
+
+To write a C program to remove all spaces from a string.
+
+ALGORITHM
+Start
+Read string using gets() / fgets()
+Traverse string
+Copy only non-space characters
+Add '\0'
+Print result
+Stop
+PROGRAM
+#include <stdio.h>
+
+int main() {
+    char str[100];
+    int i = 0, j = 0;
+
+    printf("Enter a string: ");
+    fgets(str, sizeof(str), stdin);
+
+    while (str[i] != '\0') {
+        if (str[i] != ' ' && str[i] != '\n') {
+            str[j++] = str[i];
+        }
+        i++;
+    }
+    str[j] = '\0';
+
+    printf("String without spaces: %s", str);
+    return 0;
+}
+✅ 7. Count digits, alphabets, special characters
+AIM
+
+To write a C program to count digits, alphabets, and special characters.
+
+ALGORITHM
+Start
+Read string
+Initialize counters
+Traverse string
+Check:
+digit → increment digit count
+alphabet → increment alphabet count
+else → special character
+Print counts
+Stop
+PROGRAM
+#include <stdio.h>
+
+int main() {
+    char str[100];
+    int i = 0, digits = 0, alphabets = 0, special = 0;
+
+    printf("Enter a string: ");
+    fgets(str, sizeof(str), stdin);
+
+    while (str[i] != '\0') {
+        if (str[i] >= '0' && str[i] <= '9')
+            digits++;
+        else if ((str[i] >= 'a' && str[i] <= 'z') || 
+                 (str[i] >= 'A' && str[i] <= 'Z'))
+            alphabets++;
+        else if (str[i] != ' ' && str[i] != '\n')
+            special++;
+
+        i++;
+    }
+
+    printf("Digits = %d\nAlphabets = %d\nSpecial characters = %d",
+           digits, alphabets, special);
+
+    return 0;
+}

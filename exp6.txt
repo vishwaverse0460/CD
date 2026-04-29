@@ -1,0 +1,119 @@
+✅ AIM
+
+To design and implement a calculator using LEX for lexical analysis and YACC for syntax analysis and evaluation of arithmetic expressions involving +, -, *, /, and parentheses.
+
+✅ ALGORITHM
+
+Step 1: Start
+Begin the program execution.
+
+Step 2: Lexical Analysis using LEX
+
+Read the input arithmetic expression
+Identify tokens:
+Numbers (integers)
+Operators (+, -, *, /)
+Parentheses ((, ))
+Ignore spaces and newline characters
+Pass tokens to YACC
+
+Step 3: Syntax Analysis using YACC
+
+Define grammar rules for expressions
+Maintain operator precedence:
+*, / > +, -
+Use associativity rules
+Parse tokens
+
+Step 4: Expression Evaluation
+
+Perform operations during parsing
+Store intermediate values
+
+Step 5: Output
+
+Display final evaluated result
+
+Step 6: Stop
+
+✅ PROGRAM
+🔸 LEX FILE (calc.l)
+%{
+#include "y.tab.h"
+#include <stdlib.h>
+%}
+
+%%
+[0-9]+      { yylval = atoi(yytext); return NUMBER; }
+[ \t]       ;   // ignore spaces
+\n          { return 0; }
+.           { return yytext[0]; }
+%%
+🔸 YACC FILE (calc.y)
+%{
+#include <stdio.h>
+#include <stdlib.h>
+
+void yyerror(const char *s);
+int yylex();
+%}
+
+%token NUMBER
+
+%left '+' '-'
+%left '*' '/'
+
+%%
+
+E : E '+' E   { $$ = $1 + $3; }
+  | E '-' E   { $$ = $1 - $3; }
+  | E '*' E   { $$ = $1 * $3; }
+  | E '/' E   { $$ = $1 / $3; }
+  | '(' E ')' { $$ = $2; }
+  | NUMBER    { $$ = $1; }
+  ;
+
+%%
+
+int main() {
+    printf("Enter an expression:\n");
+    yyparse();
+    return 0;
+}
+
+void yyerror(const char *s) {
+    printf("Invalid Expression\n");
+}
+🔸 (MODIFICATION FOR PRINTING RESULT)
+
+👉 Add this inside grammar (important for output):
+
+E : E '+' E   { $$ = $1 + $3; printf("Result = %d\n", $$); }
+
+⚠️ OR better version (recommended for record):
+
+Add at end:
+
+int result;
+
+E : E '+' E   { $$ = $1 + $3; result = $$; }
+  | E '-' E   { $$ = $1 - $3; result = $$; }
+  | E '*' E   { $$ = $1 * $3; result = $$; }
+  | E '/' E   { $$ = $1 / $3; result = $$; }
+  | '(' E ')' { $$ = $2; result = $$; }
+  | NUMBER    { $$ = $1; result = $$; }
+  ;
+
+And in main():
+
+int main() {
+    printf("Enter an expression:\n");
+    yyparse();
+    printf("Result = %d\n", result);
+    return 0;
+}
+✅ HOW TO EXECUTE
+lex calc.l
+yacc -d calc.y
+gcc lex.yy.c y.tab.c -o calc
+./calc
