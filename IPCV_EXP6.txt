@@ -1,0 +1,45 @@
+import cv2
+import numpy as np
+
+# Load image (same folder)
+img = cv2.imread("wrapping.png")
+
+# Check if image loaded
+if img is None:
+    print("Image not found")
+    exit()
+
+# Show original image
+cv2.imshow("Original Image", img)
+
+# Source points (corners of flyer in the image)
+# You may adjust these points depending on the image
+src_pts = np.float32([
+    [420, 170], # top-left
+    [650, 150], # top-right
+    [680, 420], # bottom-right
+    [400, 440] # bottom-left
+])
+
+# Destination points (A4 shape)
+width = 300
+height = 420
+
+dst_pts = np.float32([
+    [0, 0],
+    [width, 0],
+    [width, height],
+    [0, height]
+])
+
+# Estimate Homography (Warping parameters)
+H = cv2.getPerspectiveTransform(src_pts, dst_pts)
+
+# Apply Warping
+warped = cv2.warpPerspective(img, H, (width, height))
+
+# Show result
+cv2.imshow("Warped Image", warped)
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()

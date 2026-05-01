@@ -1,0 +1,137 @@
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+
+# ==============================
+# Load User Images
+# ==============================
+def load_images(left_path, right_path):
+
+    print("Loading stereo images...")
+
+    left_img = cv2.imread(left_path)
+    right_img = cv2.imread(right_path)
+
+    if left_img is None or right_img is None:
+        print("Error: Images not found!")
+        return None, None
+
+    print("Left image shape:", left_img.shape)
+    print("Right image shape:", right_img.shape)
+
+    return left_img, right_img
+
+
+# ==============================
+# Preprocess Images
+# ==============================
+def preprocess(left_img, right_img):
+
+    # Convert to grayscale
+    left_gray = cv2.cvtColor(left_img, cv2.COLOR_BGR2GRAY)
+    right_gray = cv2.cvtColor(right_img, cv2.COLOR_BGR2GRAY)
+
+    # Ensure same size
+    h = min(left_gray.shape[0], right_gray.shape[0])
+    w = min(left_gray.shape[1], right_gray.shape[1])
+
+    left_gray = left_gray[:h, :w]
+    right_gray = right_gray[:h, :w]
+
+    left_img = left_img[:h, :w]
+    right_img = right_img[:h, :w]
+
+    return left_img, right_img, left_gray, right_gray
+
+
+# ==============================
+# Compute Disparity
+# ==============================
+def compute_disparity(left_gray, right_gray):
+
+    print("Computing disparity...")
+
+    stereo = cv2.StereoBM_create(numDisparities=128, blockSize=15)
+
+    disparity = stereo.compute(left_gray, right_gray).astype(np.float32) / 16.0
+
+    return disparity
+
+
+# ==============================
+# Convert Disparity to Depth
+# ==============================
+def compute_depth(disparity):
+
+    # Camera parameters
+    baseline = 65.0       # mm
+    focal_length = 1000.0 # pixels
+
+    disparity[disparity <= 0] = 0.1
+
+    depth = (baseline * focal_length) / disparity
+
+    return depth
+
+
+# ==============================
+# Visualization
+# ==============================
+def visualize(left_img, right_img, disparity, depth):
+
+    disparity_norm = cv2.normalize(disparity, None, 0, 255, cv2.NORM_MINMAX)
+    depth_norm = cv2.normalize(depth, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+
+    depth_color = cv2.applyColorMap(depth_norm, cv2.COLORMAP_JET)
+
+    plt.figure(figsize=(14,10))
+
+    plt.subplot(2,2,1)
+    plt.imshow(cv2.cvtColor(left_img, cv2.COLOR_BGR2RGB))
+    plt.title("Left Image")
+    plt.axis("off")
+
+    plt.subplot(2,2,2)
+    plt.imshow(cv2.cvtColor(right_img, cv2.COLOR_BGR2RGB))
+    plt.title("Right Image")
+    plt.axis("off")
+
+    plt.subplot(2,2,3)
+    plt.imshow(disparity_norm, cmap='gray')
+    plt.title("Disparity Map")
+    plt.axis("off")
+
+    plt.subplot(2,2,4)
+    plt.imshow(cv2.cvtColor(depth_color, cv2.COLOR_BGR2RGB))
+    plt.title("Depth Map (Red = Close, Blue = Far)")
+    plt.axis("off")
+
+    plt.tight_layout()
+    plt.show()
+
+
+# ==============================
+# MAIN PROGRAM
+# ==============================
+def main():
+
+    left_path = "left.png"
+    right_path = "right.png"
+
+    left_img, right_img = load_images(left_path, right_path)
+
+    if left_img is None:
+        return
+
+    left_img, right_img, left_gray, right_gray = preprocess(left_img, right_img)
+
+    disparity = compute_disparity(left_gray, right_gray)
+
+    depth = compute_depth(disparity)
+
+    visualize(left_img, right_img, disparity, depth)
+
+    print("Depth estimation completed!")
+
+
+main()

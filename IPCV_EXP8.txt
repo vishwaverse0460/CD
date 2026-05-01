@@ -1,0 +1,95 @@
+import sys
+print(sys.executable)
+print(sys.version)
+
+#to be run in terminal
+#python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+#python -m pip install ultralytics
+
+import torch
+import ultralytics
+print(torch.__version__)
+print(ultralytics.__version__)
+
+from ultralytics import YOLO
+from IPython.display import display
+from PIL import Image
+
+model = YOLO("yolov8n.pt")
+results = model("https://ultralytics.com/images/bus.jpg")
+img = results[0].plot() # image with detections
+display(Image.fromarray(img))
+
+from ultralytics import YOLO
+import cv2  # pip install opencv-python
+
+model = YOLO("yolov8n.pt")
+results = model("test_img4.png")
+img = results[0].plot()
+cv2.imshow("Detections", img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+print(results[0].boxes)  # See detected objects
+
+
+import cv2
+import random
+import os
+from ultralytics import YOLO
+from IPython.display import Video
+# Load model
+model = YOLO("yolov8s.pt")
+
+video_path = r"t2.mp4"
+cap = cv2.VideoCapture(video_path)
+# Get video properties
+fps = int(cap.get(cv2.CAP_PROP_FPS))
+w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+# Video writer - saves in Downloads folder
+out = cv2.VideoWriter("output.mp4", cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
+# Color function
+def get_color(cls_id):
+    random.seed(cls_id)
+    return tuple(random.randint(0, 255) for _ in range(3))
+# LIMIT: Process only first 100 frames
+MAX_FRAMES = 100
+frame_count = 0
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    # Stop after MAX_FRAMES
+    if frame_count >= MAX_FRAMES:
+        print(f"\n✓ Reached limit of {MAX_FRAMES} frames. Stopping...")
+        break
+
+    # Detect objects
+    results = model.track(frame, stream=True, verbose=False)
+
+    for result in results:
+        for box in result.boxes:
+            if box.conf[0] > 0.4:
+                x1, y1, x2, y2 = map(int, box.xyxy[0])
+                cls = int(box.cls[0])
+                conf = float(box.conf[0])
+                track_id = int(box.id[0]) if box.id is not None else 0
+
+                # Draw box
+                color = get_color(cls)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+
+                # Draw label
+                label = f"{result.names[cls]} ID:{track_id} {conf:.2f}"
+                cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+
+    out.write(frame)
+    frame_count += 1
+
+    if frame_count % 10 == 0:
+        print(f"Processed {frame_count}/{MAX_FRAMES} frames...")
+cap.release()
+out.release()
+# Verify file location
+print(f"✓ Done! Output saved to: {os.path.abspath('output.mp4')}")

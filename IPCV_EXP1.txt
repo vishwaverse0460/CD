@@ -1,0 +1,160 @@
+pip install opencv-python
+pip install numpy==1.26.4
+
+import os
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+from IPython.display import Image
+%matplotlib inline
+
+pip install matplotlib
+
+Image(filename="D:/vishwaIpcv/chessboard.png")
+# Reading image as gray scale.
+cb_img = cv2.imread("D:/vishwaIpcv/chessboard.png", cv2.IMREAD_GRAYSCALE)
+# Print the image data (pixel values), element of a 2D numpy array.
+# Each pixel value is 8-bits [0,255]
+print(cb_img)
+
+# Displaying the image attributes
+print("Shape of the image: ", cb_img.shape)
+print("Data type of the image: ", cb_img.dtype)
+print("Size of the image: ", cb_img.size)
+
+# Displaying image using Matplotlib.
+plt.imshow(cb_img)
+plt.title("Image Display Using Matplotlib")
+plt.axis("off") # To turn off axes
+plt.show()
+
+# Set color map to gray scale for proper rendering.
+plt.imshow(cb_img, cmap = "gray")
+plt.axis("off")
+plt.show()
+
+Image("D:/vishwaIpcv/avacado.png")
+
+avacado_img = cv2.imread("D:/vishwaIpcv/avacado.png", cv2.IMREAD_COLOR)
+# Printing the shape of the image
+print("Image shape (height, width, channels) is:", avacado_img.shape)
+# Printing the size of the image
+print("Image size is: ", avacado_img.size)
+# Printing the data-type of the image
+print("Data type of image is:", avacado_img.dtype)
+
+# Displaying the image using matplotlib
+plt.imshow(avacado_img)
+plt.axis("off")
+plt.show()
+
+# Reversing the channels of the color image
+avacado_img_channels_reversed = avacado_img[:, :, ::-1]
+plt.imshow(avacado_img_channels_reversed)
+plt.axis("off")
+plt.show()
+
+# Split the image into the B,G,R components
+b, g, r = cv2.split(avacado_img)
+# Show the channels
+plt.figure(figsize = [20, 5])
+# Red Channel
+plt.subplot(1, 4, 1)
+plt.imshow(r, cmap = "gray")
+plt.title("Red Channel")
+plt.axis("off")
+# Green Channel
+plt.subplot(1, 4, 2)
+plt.imshow(g, cmap = "gray")
+plt.title("Green Channel")
+plt.axis("off")
+# Blue Channel
+plt.subplot(1, 4, 3)
+plt.imshow(b, cmap = "gray")
+plt.title("Blue Channel")
+plt.axis("off")
+# Merge the individual channels into a BGR image
+merged_img = cv2.merge((b, g, r))
+# Show the merged output
+plt.subplot(1, 4, 4)
+plt.imshow(merged_img[:, :, ::-1])
+plt.title("Merged Output")
+plt.axis("off")
+
+# OpenCV stores color channels in a differnet order than most other applications
+avacado_img_bgr = cv2.imread("D:/vishwaIpcv/avacado.png", cv2.IMREAD_COLOR)
+# Converting BGR to RGB
+avacado_img_rgb = cv2.cvtColor(avacado_img_bgr, cv2.COLOR_BGR2RGB)
+plt.imshow(avacado_img_rgb)
+plt.title("BGR to RGB")
+plt.axis("off")
+plt.show()
+
+# Converting to HSV
+avacado_img_hsv = cv2.cvtColor(avacado_img_bgr, cv2.COLOR_BGR2HSV)
+# Split the image into H, S, V components
+h, s, v = cv2.split(avacado_img_hsv)
+# Show the channels
+plt.figure(figsize = [20, 5])
+# Hue Channel
+plt.subplot(1, 4, 1)
+plt.imshow(h, cmap = "gray")
+plt.title("H Channel")
+plt.axis("off")
+# Saturation Channel
+plt.subplot(1, 4, 2)
+plt.imshow(s, cmap = "gray")
+plt.title("S Channel")
+plt.axis("off")
+# Value Channel
+plt.subplot(1, 4, 3)
+plt.imshow(v, cmap = "gray")
+plt.title("V Channel")
+plt.axis("off")
+# Show the original image
+plt.subplot(1, 4, 4)
+plt.imshow(avacado_img_rgb)
+plt.title("Original")
+plt.axis("off")
+plt.show()
+
+
+#CONVERTING BGR TO grayscale
+avacado_img_gray = cv2.cvtColor(avacado_img_bgr, cv2.COLOR_BGR2GRAY)
+plt.imshow(avacado_img_gray, cmap = "gray")
+plt.title("BGR to grayscale")
+plt.axis("off")
+plt.show()
+
+h_new = h+30
+avacado_img_merged = cv2.merge((h_new, s, v))
+avacado_img_rgb = cv2.cvtColor(avacado_img_merged, cv2.COLOR_HSV2RGB)
+# Split the image into the B,G,R components
+h,s,v = cv2.split(avacado_img_merged)
+# Show the channels
+plt.figure(figsize = [20, 5])
+# Hue Channel
+plt.subplot(1, 4, 1)
+plt.imshow(h, cmap = "gray")
+plt.title("H + 30 Channel")
+plt.axis("off")
+
+#saturation channel
+plt.subplot(1, 4, 2)
+plt.imshow(s, cmap = "gray")
+plt.title("S Channel")
+plt.axis("off")
+# Value Channel
+plt.subplot(1, 4, 3)
+plt.imshow(v, cmap = "gray")
+plt.title("V Channel")
+plt.axis("off")
+# Show the original image
+plt.subplot(1, 4, 4)
+plt.imshow(avacado_img_rgb)
+plt.title("Merged Image")
+plt.axis("off")
+plt.show()
+
+# Saving the image
+cv2.imwrite("avacado_saved.jpg", avacado_img_rgb)
